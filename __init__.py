@@ -11,7 +11,11 @@ import img2pdf
 import re
 
 
-class searchJstor:
+from . import free
+from . import paid
+
+
+class Jstor:
 
     profile = webdriver.FirefoxProfile()
     profile.set_preference(
@@ -28,8 +32,18 @@ class searchJstor:
     total_articles_scraped = 0
     total_articles_to_scrape = 60
 
-    def __init__(self):
+    def __init__(self, username="apple2711", password="abcdefg0"):
+        self.username = username
+        self.password = password
+        self.log_me_in()
+        self.search()
 
+    def log_me_in(self):
+
+        Login.log_me_in()
+
+    def search(self):
+        Search.search()
         self.links_page = None
         self.driver.get(self.login)
         self.log_me_in()
@@ -38,67 +52,9 @@ class searchJstor:
         self.user_list = self.ask()
         self.scrap_user_choice()
 
-    def log_me_in(self):
-        ele = self.driver.find_element_by_xpath("//input[@name='login']")
-        ele.click()
-        for i in "apple2711":
-            ele.send_keys(i)
-        ele = self.driver.find_element_by_xpath("//input[@name='password']")
-        ele.click()
-        for i in "abcdefg0":
-            ele.send_keys(i)
-        ele = self.driver.find_element_by_xpath(
-            "//input[@name='submit']").click()
-
-    def search(self, search_text="leadership and organizational behaviour"):
-        self.search_text = search_text
-        ele = self.driver.find_element_by_css_selector(
-            "input[name='Query']")
-        for i in "leadership and organizational behaviour":
-            ele.send_keys(i)
-        self.driver.find_element_by_xpath("//button[@class='button']").click()
-
-    def scrape_all_links(self):
-
-        for k, row in enumerate(self.driver.find_elements_by_xpath(
-                "//li[@class='row result-item']")):
-            try:  # try find dwnld btn
-                doc = row.find_element_by_xpath(
-                    ".//a[@class='pdfLink button']")
-            except NoSuchElementException:  # exception do nothing
-                pass
-            else:
-                self.articles[k+1] = {"download_link": doc}
-            finally:  # add lnk nd data
-                self.articles[k+1] = {"site_link": self.page_link(row)}
-                self.articles[k+1].update(self.scrap_info(row))
-                self.total_articles_scraped += 1
-                if self.total_articles_scraped ==\
-                        self.total_articles_to_scrape:
-                    return None
-
-            try:
-                ele = self.driver.find_element_by_xpath(
-                    "//li[@class='pagination-next']/a[@id='next-page']")
-            except NoSuchElementException:
-                pass
-            else:
-                ele.click()
-                sleep(3)
-                self.scrape_all_links()
 
     def scrap_info(self, ele):
-        d = {"TITLE": self.title,
-             "AUTHORS": self.authors,
-             "CITATION": self.citation,
-             "TOPICS": self.topics
-             }
-        for (key, value) in d.items():
-            try:
-                d[key] = value(ele)
-            except NoSuchElementException:
-                d[key] = None
-        return d
+        
 
     def title(self, ele):
 
@@ -192,13 +148,82 @@ class PAID(searchJstor):
         self.
 
 
-
 obj = searchJstor()
 
 with open("files_copy.json", "w") as f:
     json.dump(obj.articles, f, default=list)
 
 
-class Login:
-   def __init__():
-       
+class Login(Jstor):
+
+    def log_me_in(self):
+        ele = self.driver.find_element_by_xpath("//input[@name='login']")
+        ele.click()
+        for i in "apple2711":
+            ele.send_keys(i)
+        ele = self.driver.find_element_by_xpath("//input[@name='password']")
+        ele.click()
+        for i in "abcdefg0":
+            ele.send_keys(i)
+        ele = self.driver.find_element_by_xpath(
+            "//input[@name='submit']").click()
+
+
+class Search(Jstor):
+
+    def search(self):
+        search_text = let if let: = input() else "leadership and organizational behaviour"
+        self.search_text = search_text
+        ele = self.driver.find_element_by_css_selector(
+            "input[name='Query']")
+        for i in "leadership and organizational behaviour":
+            ele.send_keys(i)
+        self.driver.find_element_by_xpath("//button[@class='button']").click()
+
+
+class ExtractAllLinks(Jstor):
+
+    all_links = []
+
+    def scrape_all_links(self):
+        self.table_rows = self.scrape_table_rows()
+
+        for k, row in enumerate(self.table_rows):
+            self.scrape_a_link(row)
+
+        #     except NoSuchElementException:  # exception do nothing
+        #         pass
+        #     else:
+        #         
+        #     finally:  # add lnk nd data
+        #         
+
+        #     try:
+        #         ele = self.driver.find_element_by_xpath(
+        #             "//li[@class='pagination-next']/a[@id='next-page']")
+        #     except NoSuchElementException:
+        #         pass
+        #     else:
+        #         ele.click()
+        #         sleep(3)
+        #         self.scrape_all_links()
+
+    def scrape_table_rows(self):
+        return self.driver.find_elements_by_xpath(
+            "//li[@class='row result-item']")
+
+    def scrape_a_link(self, row):
+
+        try:
+            doc = row.find_element_by_xpath(
+                    ".//a[@class='pdfLink button']")
+        except NoSuchElementException:
+            paid.scrap_attribs(row)
+        else:
+            free.scape_attribs(row)
+        finally:
+            pass
+
+
+
+
