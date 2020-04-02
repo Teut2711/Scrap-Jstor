@@ -1,21 +1,17 @@
 from urllib.parse import urljoin
-import json
-
 from time import sleep
-import re
-import requests
-
+from base64 import b64decode
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
-from itertools import repeat
+import json
+import requests
+import img2pdf
+import re
 
-#import _scrap_this_url
 
-
-class scrapJstor():
+class searchJstor:
 
     profile = webdriver.FirefoxProfile()
     profile.set_preference(
@@ -29,17 +25,18 @@ class scrapJstor():
     articles = dict()
     strange = 0
     login = r"https://www.jstor.org/action/showLogin"
+    total_articles_scraped = 0
+    total_articles_to_scrape = 60
 
     def __init__(self):
 
         self.links_page = None
         self.driver.get(self.login)
-        #input("Proceed? ")
         self.log_me_in()
         self.search()
-        #self.links_page = self.driver.current_url
         self.scrape_all_links()
-        # self.feed_dict()
+        self.user_list = self.ask()
+        self.scrap_user_choice()
 
     def log_me_in(self):
         ele = self.driver.find_element_by_xpath("//input[@name='login']")
@@ -50,7 +47,8 @@ class scrapJstor():
         ele.click()
         for i in "abcdefg0":
             ele.send_keys(i)
-        ele = self.driver.find_element_by_xpath("//input[@name='submit']").click()
+        ele = self.driver.find_element_by_xpath(
+            "//input[@name='submit']").click()
 
     def search(self, search_text="leadership and organizational behaviour"):
         self.search_text = search_text
@@ -69,26 +67,44 @@ class scrapJstor():
                     ".//a[@class='pdfLink button']")
             except NoSuchElementException:  # exception do nothing
                 pass
-            
-            else:    
+            else:
                 self.articles[k+1] = {"download_link": doc}
             finally:  # add lnk nd data
                 self.articles[k+1] = {"site_link": self.page_link(row)}
                 self.articles[k+1].update(self.scrap_info(row))
+                self.total_articles_scraped += 1
+                if self.total_articles_scraped ==\
+                        self.total_articles_to_scrape:
+                    return None
+
+            try:
+                ele = self.driver.find_element_by_xpath(
+                    "//li[@class='pagination-next']/a[@id='next-page']")
+            except NoSuchElementException:
+                pass
+            else:
+                ele.click()
+                sleep(3)
+                self.scrape_all_links()
 
     def scrap_info(self, ele):
-        return {"TITLE": self.title(ele),
-                "AUTHORS": self.authors(ele),
-                "CITATION": self.citation(ele),
-                "TOPICS": self.topics(ele)
-                }
+        d = {"TITLE": self.title,
+             "AUTHORS": self.authors,
+             "CITATION": self.citation,
+             "TOPICS": self.topics
+             }
+        for (key, value) in d.items():
+            try:
+                d[key] = value(ele)
+            except NoSuchElementException:
+                d[key] = None
+        return d
 
     def title(self, ele):
 
         current_tag = ele.find_element_by_xpath(
             ".//div[@class='title']//descendant::a")
         name = current_tag.text
-        href = current_tag.get_attribute("href")
         return name
 
     def authors(self, ele):
@@ -109,11 +125,6 @@ class scrapJstor():
         tags = [j.text for j in current_tag]
         return tags
 
-    # def feed_dict(self):
-    #     for k, url in enumerate(self.all_docs_links):
-    #         _scrap_this_url.scrape(self, k, url)
-    #         self.get_back()
-
     def page_link(self, ele):
         current_tag = ele.find_element_by_xpath(
             ".//div[@class='title']//descendant::a")
@@ -121,14 +132,73 @@ class scrapJstor():
         url = urljoin(ele.parent.current_url, href)
         return url
 
-    # def save_cookies(self):
-    #     self.cookies = self.driver.get_cookies()
-
-    # def get_back(self):
-    #     self.driver.get(self.links_page)
+    def scrap_user_choice():
 
 
-obj = scrapJstor()
+class FREE:
+    def download_pdf(self):
+        for i in selected:
+            if self.articles[i].get("download_link"):
+                self.driver.get(
+                    self.articles[i]["download_link"])
+            else:
+                self.driver.get(
+                    self.articles[i]["site_link"])
+                self.get_unpaid()
+
+    def get_unpaid(self):
+        try:
+            ele = self.driver.find_element_by_xpath(
+                """//ul[@class='action-buttons mln']/li/a[contains(text(),
+                    'Read')][contains(text(), 'Online')]""")
+        except NoSuchElementException:
+            try:
+                return self.scrap_pdf()
+
+            print("See the site")
+        else:
+            ele.click()
+
+    def scrap_pdf(self):
+        try:
+            images = []
+            while True:
+                images.append(self.driver.find_element_by_xpath(
+                    """//img[@id='page-scan-container']
+                    [contains(@src,'data:image')]""")
+                ).get_attribute("src")
+                self.driver.find_element_by_xpath(
+                    "//span[@aria-label='Next Page']").click()
+        except NoSuchElementException:
+            pass
+        else:
+            self.toPDF(images)
+
+    @staticmethod
+    def toPDF(file_name, list_of_base64=[]):
+        list_of_base64 = [parse_base64(i) for i in list_of_base64]
+        with open(f"{file_name}.pdf", "wb") as f:
+            f.write(img2pdf.convert(list_of_base64))
+        return f"{file_name}.pdf"
+
+        def parse_base64(string):
+            if string.startswith("data:image"):
+                return b64decode(string.split(",")[1], validate=True)
+
+
+class PAID(searchJstor):
+
+    def __init__(self):
+        self.
+
+
+
+obj = searchJstor()
 
 with open("files_copy.json", "w") as f:
     json.dump(obj.articles, f, default=list)
+
+
+class Login:
+   def __init__():
+       
