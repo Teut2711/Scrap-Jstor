@@ -37,9 +37,7 @@ class scrapJstor():
         input("Proceed? ")
         self.search()
         self.links_page = self.driver.current_url
-        self.all_docs_links = [self.page_link(i)
-                              for i in self.driver.find_elements_by_xpath(
-            "//li[@class='row result-item']")]
+        self.scrape_all_links()
         self.feed_dict()
 
     def search(self, search_text="leadership and organizational behaviour"):
@@ -48,6 +46,55 @@ class scrapJstor():
             "input[name='Query']").send_keys(
                 "leadership and organizational behaviour")
         self.driver.find_element_by_xpath("//button[@class='button']").click()
+
+    def scrape_all_urls(self):
+        self.all_docs_links = {}
+
+        for k, row in enumerate(self.driver.find_elements_by_xpath(
+                "//li[@class='row result-item']")):
+            try:  # try find dwnld btn
+                doc = row.find_element_by_xpath(
+                    ".//a[@class='pdfLink button']")
+            except NoSuchElementException:  # exception do nothing
+                self.articles[k+1] = {"download_link": doc}
+            finally:  # add lnk nd data
+                self.articles[k+1] = {"site_link": self.page_link(row)}
+                self.articles[k+1].update(self.scrap_info(row))
+
+    def scrap_info(self, ele):
+        return {"TITLE": self.title(ele),
+                "AUTHORS": self.authors(ele),
+                "CITATION": self.citation(ele),
+                "TOPICS": self.tags(ele)
+                }
+
+    def title(self, ele):
+
+        current_tag = ele.find_element_by_xpath(
+            ".//div[@class='title']//descendant::a")
+        name = current_tag.text
+        href = current_tag.get_attribute("href")
+        url = urljoin(ele.parent.current_url, href)
+        self.scrap_pdf(name, url)
+        return name
+
+    def author(self, ele):
+        current_tag = ele.find_elements_by_xpath(
+            ".//div[@class='contrib']//descendant::a")
+        authors = [j.text for j in current_tag]
+        return authors
+
+    def citation(self, ele):
+        current_tag = ele.find_element_by_xpath(
+            ".//div[@class='src break-word']")
+        citation = current_tag.text
+        return citation
+
+    def topics(self, ele):
+        current_tag = ele.find_elements_by_xpath(
+            ".//div[@class='topic-evaluation-pane mtm']//descendant::a")
+        tags = [j.text for j in current_tag]
+        return tags
 
     def feed_dict(self):
         for k, url in enumerate(self.all_docs_links):

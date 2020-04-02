@@ -15,23 +15,53 @@ def scrape(self, k, url):
     self.articles[k+1]["JOURNAL"] = _paper_info.journal(self)
     self.articles[k+1]["PAGE COUNT"] = _paper_info.page_count(self)
     self.articles[k+1]["TOPICS"] = _paper_info.topics(self)
-    try:
-        
-        self.driver.find_element_by_xpath(
-                """//ul[@class='action-buttons mln']/li/a[contains(text(),
-                'Read')][contains(text(), 'Online')]""").click()
-
-    except NoSuchElementException:
-        try:
-            pdf_url = self.driver.find_element_by_xpath(
-                "//a[contains(@class,'pdfLink')]").click()
-        except NoSuchElementException:
-            print(f"See Page :{self.driver.current_url}")
-        else:
-            print("Free PDF")
+    
+    if scrape_pdf():
+        pass
     else:
-        self.articles[k+1]["PDF"] = self.scrape_pdf()
+        try:
+            self.driver.find_element_by_xpath(
+                 """//ul[@class='action-buttons mln']/li/a[contains(text(),
+                  'Read')][contains(text(), 'Online')]""").click()
+        except NoSuchElementException:
+            print("Go to site request author")
+        else:
+            scrape_pdf()
 
+        # try:
+        
+        # except NoSuchElementException:
+        #     print(f"See Page :{self.driver.current_url}")
+        # else:
+        #     print("Free PDF")
+    else:
+        self.articles[k+1]["PDF"] = scrape_pdf()
+    
+    def scrape_pdf():
+
+        images = []
+        '''  Add all links '''
+        try:
+            try:
+                pdf_url = self.driver.find_element_by_xpath(
+                       "//a[contains(@class,'pdfLink')]").click()
+                self.driver.find_element_by_xpath(
+                    """//img[@id='page-scan-container']
+                    [contains(@src,'data:image')]""")
+            except NoSuchElementException:
+                
+            else:
+                while True:
+                    images.append(self.driver.find_element_by_xpath(
+                        """//img[@id='page-scan-container']
+                        [contains(@src,'data:image')]""")
+                    ).get_attribute("src")
+                    self.driver.find_element_by_xpath(
+                        "//span[@aria-label='Next Page']").click()
+        except:
+            title = self.driver.find_element_by_xpath(
+                    "//h1[@class='medium-heading][@class='item-title']").text
+            return _base64topdf.toPDF(title, images)
 """ 
 def extract_data(self):
 
@@ -60,19 +90,4 @@ def extract_data(self):
             return d """
 
 
-def scrape_pdf(self):
 
-    images = []
-    '''  Add all links '''
-    try:
-        while True:
-            images.append(self.driver.find_element_by_xpath(
-                """//img[@id='page-scan-container']
-                [contains(@src,'data:image')]""")
-            ).get_attribute("src")
-            self.driver.find_element_by_xpath(
-                "//span[@aria-label='Next Page']").click()
-    except:
-        title = self.driver.find_element_by_xpath(
-            "//h1[@class='medium-heading][@class='item-title']").text
-        return _base64topdf.toPDF(title, images)
