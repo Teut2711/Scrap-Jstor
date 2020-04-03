@@ -11,36 +11,51 @@ import img2pdf
 import re
 
 
-from . import free
-from . import paid
+from .login import Login
 
 
-class Jstor:
+class Jstor():
 
-    profile = webdriver.FirefoxProfile()
-    profile.set_preference(
-        'browser.download.manager.showWhenStarting', False)
-    profile.set_preference('browser.download.dir', './')
-    profile.set_preference("pdfjs.disabled", "true")
-    profile.set_preference(
-        "browser.helperApps.neverAsk.saveToDisk", "application/pdf")
+    def __init__(self, username="apple2711", password="abcdefg0", search="something"):
+        setattr(self, username, username)
+        setattr(self, password, password)
+        self.complete_the_task()
 
-    driver = webdriver.Firefox()
-    articles = dict()
-    strange = 0
-    login = r"https://www.jstor.org/action/showLogin"
-    total_articles_scraped = 0
-    total_articles_to_scrape = 60
 
-    def __init__(self, username="apple2711", password="abcdefg0"):
+    def complete_the_task(self):
+        Login(self.username, self.password)
+        Search(self.search_text)
+        Extract    
+    
+    
+
+    @property
+    def username(self):
+        return self.username
+
+    @property
+    def password(self):
+        return self.password
+
+    @property
+    def search_text(self):
+        return self.search_text
+
+    @username.setter
+    def usename(self, username):
         self.username = username
+
+    @password.setter
+    def password(self, password):
         self.password = password
-        self.log_me_in()
-        self.search()
+        
+    @search_text.setter
+    def search_text(self, search_text):
+        self.search_text = search_text
 
     def log_me_in(self):
 
-        Login.log_me_in()
+        Login()
 
     def search(self):
         Search.search()
@@ -53,11 +68,7 @@ class Jstor:
         self.scrap_user_choice()
 
 
-
-
-
 obj = Jstor()
 
 with open("files_copy.json", "w") as f:
     json.dump(obj.articles, f, default=list)
-

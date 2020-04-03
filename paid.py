@@ -1,7 +1,5 @@
-class paid(Jstor, ExtractAllLinks):
+from .meta import DocsType
 
-    def scrape_attribs(self, row):
-        pass
 
-    def download_pdf(self):
-        pass
+class paid(DocsType):
+    

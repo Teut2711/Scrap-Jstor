@@ -4,7 +4,8 @@ from selenium.common.exceptions import NoSuchElementException
 from urllib.parse import urljoin
 
 
-class extractPage(metaclass=ABCMeta):
+class getAllDocs(metaclass=ABCMeta):
+    
     @staticmethod
     def helper_try_except(fun):
         def inner_func(*args):
