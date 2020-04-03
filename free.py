@@ -14,14 +14,53 @@ class free(Jstor, ExtractAllLinks):
                 return None
         return inner_func
 
-    def scrape_attribs(self, row):
+    @property
+    def title(self):
+        return self.title
 
-        self.title = self.scrape_title(row)
-        self.authors = self.scrape_authors(row)
-        self.citation = self.scrape_citation(row)
-        self.topics = self.scrape_topics(row)
-        self.download_link = self.scrape_download_link(row)
-        self.pagelink = self.scrape_pagelink(row)
+    @property
+    def authors(self):
+        return self.authors
+
+    @property
+    def citation(self):
+        return self.citation
+
+    @property
+    def topics(self):
+        return self.topics
+
+    @property
+    def download_link(self):
+        return self.download_link
+
+    @property
+    def page_link(self):
+        return self.pagelink
+
+    @title.setter
+    def title(self, row):
+        return self.scrape_title(row)
+
+    @authors.setter
+    def authors(self, row):
+        return self.scrape_authors(row)
+
+    @citation.setter
+    def citation(self, row):
+        return self.scrape_citation(row)
+
+    @topics.setter
+    def topics(self, row):
+        return self.scrape_topics(row)
+
+    @download_link.setter
+    def download_link(self, row):
+        return self.scrape_download_link(row)
+
+    @page_link.setter
+    def page_link(self, row):
+        return self.scrape_pagelink(row)
 
     @property
     def attributes(self):
@@ -73,6 +112,8 @@ class free(Jstor, ExtractAllLinks):
 
     @helper_try_except
     def scrape_download_link(self, row):
+
         doc = row.find_element_by_xpath(
-            ".//a[@class='pdfLink button']")
-        return doc    
+            ".//a[@class='pdfLink button']").get_attribute("href")
+
+        return urljoin(self.driver.parent.current_link, doc)
