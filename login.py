@@ -1,18 +1,18 @@
 from selenium import webdriver
 import os
 
-driver = webdriver.Firefox()
-articles = dict()
-strange = 0
-login = r"https://www.jstor.org/action/showLogin"
+
+
+login = 
 total_articles_scraped = 0
 total_articles_to_scrape = 60
 
 
 class Login:
-    def __init__(self, username, password):
-        self.browser_options()
-        self.log_me_in()
+    @classmethod
+    def login(cls, username, password):
+        cls.browser_options()
+        cls.log_me_in()
 
     @staticmethod
     def browser_options(download_folder=os.getcwd()):

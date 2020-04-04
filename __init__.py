@@ -10,24 +10,40 @@ import requests
 import img2pdf
 import re
 
+import os
 
 from .login import Login
 
 
 class Jstor():
 
-    def __init__(self, username="apple2711", password="abcdefg0", search="something"):
+    profile = webdriver.FirefoxProfile()
+    driver = webdriver.Firefox()
+    link = r"https://www.jstor.org/action/showLogin"
+    @classmethod
+    def browser_settings(cls, username=None, password=None,
+                         download_dir=os.getcwd(), open_pdf_in_browser=False):
+        if username and password:
+            cls.profile.set_preference('browser.download.dir', download_dir)
+            cls.profile.set_preference(
+                "pdfjs.disabled", not(open_pdf_in_browser))
+            cls.profile.set_preference(
+                "browser.helperApps.neverAsk.saveToDisk", "application/pdf")
+            cls(username=username, password=password)
+        else:
+            raise ValueError("Username and Password cannot be type 'None'")
+
+    def __init__(self, username="apple2711", password="abcdefg0",
+                 search="something"):
+        self.browser_settings(username=username, password=password)
         setattr(self, username, username)
         setattr(self, password, password)
-        self.complete_the_task()
-
+        Login(self, link=self.link)
 
     def complete_the_task(self):
-        Login(self.username, self.password)
+        Login.login(self.username, self.password)
         Search(self.search_text)
-        Extract    
-    
-    
+        Extract
 
     @property
     def username(self):
@@ -48,7 +64,7 @@ class Jstor():
     @password.setter
     def password(self, password):
         self.password = password
-        
+
     @search_text.setter
     def search_text(self, search_text):
         self.search_text = search_text
