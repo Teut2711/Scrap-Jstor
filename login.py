@@ -1,39 +1,24 @@
-from selenium import webdriver
-import os
-
-
-
-login = 
-total_articles_scraped = 0
-total_articles_to_scrape = 60
-
 
 class Login:
-    @classmethod
-    def login(cls, username, password):
-        cls.browser_options()
-        cls.log_me_in()
 
-    @staticmethod
-    def browser_options(download_folder=os.getcwd()):
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference('browser.download.dir', os.getcwd())
-        profile.set_preference("pdfjs.disabled", "true")
-        profile.set_preference(
-            "browser.helperApps.neverAsk.saveToDisk", "application/pdf")
+    def __init__(self):
 
-    def log_me_in(self):
+        self.feed_id()
+        self.feed_password()
+        self.submit()
+
+    def feed_id(self):
         ele = self.driver.find_element_by_xpath("//input[@name='login']")
         ele.click()
-        for i in "apple2711":
+        for i in self.username:
             ele.send_keys(i)
-        
+
     def feed_password(self):
         ele = self.driver.find_element_by_xpath("//input[@name='password']")
-                ele.click()
-                for i in "abcdefg0":
-                    ele.send_keys(i)
-                ele = self.driver.find_element_by_xpath(
-                    "//input[@name='submit']").click()
-    
-    def submit(self):                 
+        ele.click()
+        for i in self.password:
+            ele.send_keys(i)
+
+    def submit(self):
+        self.driver.find_element_by_xpath(
+            "//input[@name='submit']").click()
