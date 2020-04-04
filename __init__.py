@@ -12,17 +12,21 @@ import re
 
 import os
 
-from login import Login
+from jstorScrap.login import Login
+from jstorScrap.search import Search
+from jstorScrap.extractallrows import ExtractAllRows
 
 
-class Jstor(Login):
+class Jstor(Login, Search):
 
     profile = webdriver.FirefoxProfile()
     driver = webdriver.Firefox()
     link = r"https://www.jstor.org/action/showLogin"
+    search_text = "leadership and organizational behaviour"
 
     @classmethod
-    def browser_settings(cls, download_dir=os.getcwd(), open_pdf_in_browser=False):
+    def browser_settings(cls, download_dir=os.getcwd(),
+                         open_pdf_in_browser=False):
         cls.profile.set_preference('browser.download.dir', download_dir)
         cls.profile.set_preference(
             "pdfjs.disabled", not(open_pdf_in_browser))
@@ -35,8 +39,10 @@ class Jstor(Login):
         self.driver.get(self.link)
         self.username = username
         self.password = password
-        super(Login, self).__init__()
-        #super(Search, self).__init__(link)
+        Login.__init__(self)
+        Search.__init__(self)
+        ExtractAllRows.__init__(self)
+
 
 obj = Jstor("apple2711", "abcdefg0")
 

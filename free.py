@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from .meta import DocsType
 
 
-class free(DocsType):
+class FREE:
 
     def scrape_download_link(self, row):
 
