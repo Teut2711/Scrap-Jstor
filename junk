@@ -10,18 +10,7 @@ class FREE:
                     self.articles[i]["site_link"])
                 self.get_unpaid()
 
-    def get_unpaid(self):
-        try:
-            ele = self.driver.find_element_by_xpath(
-                """//ul[@class='action-buttons mln']/li/a[contains(text(),
-                    'Read')][contains(text(), 'Online')]""")
-        except NoSuchElementException:
-            try:
-                return self.scrap_pdf()
 
-            print("See the site")
-        else:
-            ele.click()
 
     def scrap_pdf(self):
         try:

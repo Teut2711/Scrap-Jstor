@@ -12,15 +12,15 @@ import re
 
 import os
 
-from jstorScrap.login import Login
-from jstorScrap.search import Search
-from jstorScrap.extractallrows import ExtractAllRows
+from login import login
+from search import search
+from extractallrows import extractallrows
 
 
-class Jstor(Login, Search):
+class Jstor:
 
     profile = webdriver.FirefoxProfile()
-    driver = webdriver.Firefox()
+    driver = webdriver.Firefox(firefox_profile=profile)
     link = r"https://www.jstor.org/action/showLogin"
     search_text = "leadership and organizational behaviour"
 
@@ -33,15 +33,14 @@ class Jstor(Login, Search):
         cls.profile.set_preference(
             "browser.helperApps.neverAsk.saveToDisk", "application/pdf")
 
-    def __init__(self, username="apple2711", password="abcdefg0",
-                 search="something"):
+    def __init__(self, username="apple2711", password="abcdefg0"):
         Jstor.browser_settings()
-        self.driver.get(self.link)
         self.username = username
         self.password = password
-        Login.__init__(self)
-        Search.__init__(self)
-        ExtractAllRows.__init__(self)
+        self.driver.get(self.link)
+        login(self.driver, self.username, self.password)
+        search(self.driver, self.search_text)
+        self.all_docs = extractallrows(self.driver)
 
 
 obj = Jstor("apple2711", "abcdefg0")

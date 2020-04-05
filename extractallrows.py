@@ -1,31 +1,28 @@
 
-
 from selenium.common.exceptions import NoSuchElementException
-from jstorScrap.paid import PAID
+from paid import PAID
+from free import FREE
 
-class ExtractAllRows:
 
-    all_links = []
+def extractallrows(driver):
+    all_docs = []
+    scrape_all_links(driver, all_docs)
+    return all_docs
 
-    def __init__(self):
-        self.scrape_all_links()
 
-    def scrape_all_links(self):
-        self.table_rows = self.scrape_table_rows()
-
-        for k, row in enumerate(self.table_rows):
-            self.scrape_a_link(row)
-
-    def scrape_table_rows(self):
-        return self.driver.find_elements_by_xpath(
-            "//li[@class='row result-item']")
-
-    def scrape_a_link(self, row):
+def scrape_all_links(driver, all_docs):
+    def scrape_a_link(row):
         try:
-            doc = row.find_element_by_xpath(
+            row.find_element_by_xpath(
                 ".//a[@class='pdfLink button']")
         except NoSuchElementException:
-            self.all_links.append(Paid(row))
+            all_docs.append(PAID(driver, row))
         else:
-            self.all_links.append(Free(row))
+            all_docs.append(FREE(driver, row))
 
+    def scrape_table_rows():
+        return driver.find_elements_by_xpath(
+            "//li[@class='row result-item']")
+
+    for k, row in scrape_table_rows():
+        scrape_a_link(row)

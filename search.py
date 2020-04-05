@@ -1,11 +1,7 @@
 
-class Search:
-    def __init__(self):
-        self.search()
-
-    def search(self):
-        ele = self.driver.find_element_by_css_selector(
-            "input[name='Query']")
-        for i in self.search_text:
-            ele.send_keys(i)
-        self.driver.find_element_by_xpath("//button[@class='button']").click()
+def search(driver, search_text):
+    ele = driver.find_element_by_css_selector(
+        "input[name='Query']")
+    for i in search_text:
+        ele.send_keys(i)
+    driver.find_element_by_xpath("//button[@class='button']").click()

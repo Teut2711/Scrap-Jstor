@@ -3,66 +3,26 @@ from abc import ABCMeta, abstractmethod
 from selenium.common.exceptions import NoSuchElementException
 from urllib.parse import urljoin
 
+from jstorScrap.utils import helper_try_except
 
-class getAllDocs(metaclass=ABCMeta):
-    
-    @staticmethod
-    def helper_try_except(fun):
-        def inner_func(*args):
-            try:
-                return fun(*args)
 
-            except NoSuchElementException:
-                return None
-        return inner_func
+class GeneralDoc(metaclass=ABCMeta):
 
-    @property
-    def title(self):
-        return self.title
-
-    @property
-    def authors(self):
-        return self.authors
-
-    @property
-    def citation(self):
-        return self.citation
-
-    @property
-    def topics(self):
-        return self.topics
-
-    @property
-    def download_link(self):
-        return self.download_link
-
-    @property
-    def page_link(self):
-        return self.pagelink
-
-    @title.setter
-    def title(self, row):
-        return self.scrape_title(row)
-
-    @authors.setter
-    def authors(self, row):
-        return self.scrape_authors(row)
-
-    @citation.setter
-    def citation(self, row):
-        return self.scrape_citation(row)
-
-    @topics.setter
-    def topics(self, row):
-        return self.scrape_topics(row)
-
-    @download_link.setter
-    def download_link(self, row):
-        return self.scrape_download_link(row)
-
-    @page_link.setter
-    def page_link(self, row):
-        return self.scrape_pagelink(row)
+    def __init__(self, row):
+        self.title = self.scrape_title(row)
+        self.authors = self.scrape_authors(row)
+        self.citation = self.scrape_citation(row)
+        self.topics = self.scrape_topics(row)
+        self.pagelink = self.scrape_pagelink(row)
+        def attributes(self):
+        return dict(
+            TITLE=self.title,
+            AUTHORS=self.authors,
+            CITATION=self.citation,
+            TOPICS=self.topics,
+            DOWNLOAD_LINK=self.download_link,
+            PAGE_LINK=self.pagelink
+        )
 
     @helper_try_except
     def scrape_title(self, ele):
@@ -110,4 +70,3 @@ class getAllDocs(metaclass=ABCMeta):
             ".//a[@class='pdfLink button']").get_attribute("href")
 
         return urljoin(self.driver.parent.current_link, doc)
-    
