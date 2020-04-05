@@ -1,10 +1,10 @@
 def login(driver, username, password):
-    driver.feed(driver, id)
-    driver.feed(driver, password)
-    driver.submit(driver)
+    feed_username(driver, username)
+    feed_password(driver, password)
+    submit(driver)
 
 
-def feed_id(driver, username):
+def feed_username(driver, username):
     ele = driver.find_element_by_xpath("//input[@name='login']")
     ele.click()
     for i in username:

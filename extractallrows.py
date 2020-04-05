@@ -24,5 +24,5 @@ def scrape_all_links(driver, all_docs):
         return driver.find_elements_by_xpath(
             "//li[@class='row result-item']")
 
-    for k, row in scrape_table_rows():
+    for k, row in enumerate(scrape_table_rows()):
         scrape_a_link(row)
