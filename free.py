@@ -1,21 +1,21 @@
-from urllib.parse import urljoin
 from templates import GeneralDoc
 from utils import helper_try_except, path
-from time import sleep
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 import os
 import time
 from string import punctuation
 
+
 class FREE(GeneralDoc):
     def __init__(self, driver, row):
         super().__init__(row)
-        
-        if self.title:
-            self.PDF = self.renamePDF(self.self.makePDF(driver=driver,
-                                    filename=self.title, row=row))
-            self.attributes["PDF"] = self.PDF
+        if os.path.exists(self.clean_title(self.title)+".pdf"):
+            print("File Already exists")
+        else:
+            if self.title:
+                self.PDF = self.makePDF(driver=driver,
+                                        filename=self.title, row=row)
+                self.PDF = self.renamePDF(self.PDF, self.title)
+                self.attributes["PDF"] = self.PDF
 
     def makePDF(self, driver, filename, row):
         def parse(string):
@@ -33,10 +33,18 @@ class FREE(GeneralDoc):
             doc = row.find_element_by_xpath(
                 ".//a[@class='pdfLink button']")
             doc.click()
-            return parse(doc.get_attribute("href"))+".pdf"
+            downloaded_file_name = parse(doc.get_attribute("href"))+".pdf"
+            if check_name(downloaded_file_name):
+                return downloaded_file_name
 
         return download_file_and_get_name()
 
+    def clean_title(self, title):
+        return title.translate(
+            {ord(i): ord(" ") for i in punctuation})
+
     def renamePDF(self, curr_name, title):
-        os.rename(os.path.join(path, curr_name), os.path.join(path, title))
-        return title+".pdf"
+
+        os.rename(os.path.join(path, curr_name),
+                  os.path.join(path, self.clean_title(title)+".pdf"))
+        return title

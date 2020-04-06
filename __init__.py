@@ -20,6 +20,11 @@ from search import search
 from extractallrows import extractallrows
 from utils import path
 
+for i in os.listdir():
+    if i.endswith("pdf"):
+        os.remove(i)
+
+
 class Jstor:
 
     link = r"https://www.jstor.org/action/showLogin"
@@ -27,7 +32,7 @@ class Jstor:
     @classmethod
     def browser_start_FireFox(cls, download_dir=path,
                               open_pdf_in_browser=False):
-        
+
         profile = webdriver.FirefoxProfile()
         profile.set_preference("browser.download.folderList", 2)
         profile.set_preference('browser.download.dir', download_dir)
@@ -48,7 +53,6 @@ class Jstor:
 
 
 obj = Jstor("apple2711", "abcdefg0")
-
 
 
 # with open("files_copy.json", "w") as f:
