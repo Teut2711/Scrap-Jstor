@@ -12,12 +12,12 @@ class FREE(GeneralDoc):
             print("File Already exists")
         else:
             if self.title:
-                self.PDF = self.makePDF(driver=driver,
-                                        filename=self.title, row=row)
+                self.PDF = self.downloadPDF(driver=driver,
+                                            filename=self.title, row=row)
                 self.PDF = self.renamePDF(self.PDF, self.title)
                 self.attributes["PDF"] = self.PDF
 
-    def makePDF(self, driver, filename, row):
+    def downloadPDF(self, driver, filename, row):
         def parse(string):
             return string.split(".pdf?")[0].split("/")[-1]
 
