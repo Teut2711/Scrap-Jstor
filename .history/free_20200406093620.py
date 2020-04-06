@@ -11,11 +11,11 @@ from string import punctuation
 class FREE(GeneralDoc):
     def __init__(self, driver, row):
         super().__init__(row)
-        
+        print(self.title)
         if self.title:
-            self.PDF = self.renamePDF(self.self.makePDF(driver=driver,
-                                    filename=self.title, row=row))
-            self.attributes["PDF"] = self.PDF
+            self.PDF = self.self.makePDF(driver=driver,
+                                    filename=self.title, row=row)
+            self.attributes["PDF"] = self.renamePDF(self.PDF)
 
     def makePDF(self, driver, filename, row):
         def parse(string):

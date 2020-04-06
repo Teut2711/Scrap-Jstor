@@ -11,11 +11,11 @@ from string import punctuation
 class FREE(GeneralDoc):
     def __init__(self, driver, row):
         super().__init__(row)
-        
+        print(self.title)
         if self.title:
-            self.PDF = self.renamePDF(self.self.makePDF(driver=driver,
-                                    filename=self.title, row=row))
-            self.attributes["PDF"] = self.PDF
+            self.PDF = self.self.makePDF(driver=driver,
+                                    filename=self.title, row=row)
+            self.attributes["PDF"] = self.renamePDF(self.PDF)
 
     def makePDF(self, driver, filename, row):
         def parse(string):
@@ -35,8 +35,8 @@ class FREE(GeneralDoc):
             doc.click()
             return parse(doc.get_attribute("href"))+".pdf"
 
-        return download_file_and_get_name()
-
-    def renamePDF(self, curr_name, title):
-        os.rename(os.path.join(path, curr_name), os.path.join(path, title))
-        return title+".pdf"
+        downloaded_file_name = download_file_and_get_name()
+        if check_name(downloaded_file_name):
+            os.rename(os.path.join(path, downloaded_file_name),
+                      os.path.join(path,   "".join(
+                          [" " if i in punctuation else i for i in filename ])+".pdf"))

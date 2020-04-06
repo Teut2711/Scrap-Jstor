@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from utils import helper_try_except
 
 
-class GeneralDoc(metaclass=ABCMeta):
+class GeneralDoc:
 
     def __init__(self, row):
         self.title = self.scrape_title(row)

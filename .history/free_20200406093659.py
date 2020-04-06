@@ -13,9 +13,9 @@ class FREE(GeneralDoc):
         super().__init__(row)
         
         if self.title:
-            self.PDF = self.renamePDF(self.self.makePDF(driver=driver,
+            self.PDF = self.rename(self.self.makePDF(driver=driver,
                                     filename=self.title, row=row))
-            self.attributes["PDF"] = self.PDF
+            self.attributes["PDF"] = self.PDF)
 
     def makePDF(self, driver, filename, row):
         def parse(string):

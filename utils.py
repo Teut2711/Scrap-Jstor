@@ -1,5 +1,8 @@
 
 from selenium.common.exceptions import NoSuchElementException
+import os
+
+path = os.path.abspath(os.path.dirname(__file__))
 
 
 def helper_try_except(fun):
