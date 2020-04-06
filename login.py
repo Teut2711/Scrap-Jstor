@@ -1,3 +1,7 @@
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
 def login(driver, username, password):
     feed_username(driver, username)
     feed_password(driver, password)
@@ -19,5 +23,7 @@ def feed_password(driver, password):
 
 
 def submit(driver):
-    driver.find_element_by_xpath(
-        "//input[@name='submit']").click()
+    ele = driver.find_element_by_xpath(
+        "//input[@name='submit']")
+    ele.click()
+    WebDriverWait(driver, 30).until(EC.invisibility_of_element_located(ele))

@@ -1,38 +1,26 @@
-from urllib.parse import urljoin
-from time import sleep
-from base64 import b64decode
-
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.chrome.options import Options
-
-
 import json
-import requests
-import img2pdf
-import re
-
 import os
 
 from login import login
-
 from search import search
 from extractallrows import extractallrows
 from utils import path
 
-for i in os.listdir():
-    if i.endswith("pdf"):
-        os.remove(i)
+
+for i in os.listdir(path):
+    if i.endswith(".pdf"):
+        os.remove(os.path.join(path, i))
 
 
 class Jstor:
 
     link = r"https://www.jstor.org/action/showLogin"
     search_text = "leadership and organizational behaviour"
+
     @classmethod
     def browser_start_FireFox(cls, download_dir=path,
                               open_pdf_in_browser=False):
-
         profile = webdriver.FirefoxProfile()
         profile.set_preference("browser.download.folderList", 2)
         profile.set_preference('browser.download.dir', download_dir)
@@ -50,10 +38,10 @@ class Jstor:
         login(self.driver, self.username, self.password)
         search(self.driver, self.search_text)
         self.all_docs = extractallrows(self.driver)
+        self.driver.close()
 
 
 obj = Jstor("apple2711", "abcdefg0")
 
-
-# with open("files_copy.json", "w") as f:
-#     json.dump(obj.articles, f, default=list)
+with open(os.path.join(path, "files_copy.json"), "w") as f:
+    json.dump([i.attributes for i in obj.all_docs], f, default=list)

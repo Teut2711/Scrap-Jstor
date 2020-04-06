@@ -16,6 +16,7 @@ class FREE(GeneralDoc):
                                             filename=self.title, row=row)
                 self.PDF = self.renamePDF(self.PDF, self.title)
                 self.attributes["PDF"] = self.PDF
+                print()
 
     def downloadPDF(self, driver, filename, row):
         def parse(string):

@@ -15,8 +15,7 @@ def scrape_all_links(driver, all_docs):
             row.find_element_by_xpath(
                 ".//a[@class='pdfLink button']")
         except NoSuchElementException:
-            pass
-            #all_docs.append(PAID(driver, row))
+            all_docs.append(PAID(driver, row))
         else:
             all_docs.append(FREE(driver, row))
 
